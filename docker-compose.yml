@@ -1,0 +1,71 @@
+version: '3.4'
+
+networks:
+  eraftd:
+    driver: overlay
+
+services:
+  eraftd1:
+    networks:
+      - eraftd
+    image: eraftd
+    command: --id 1 --cluster http://eraftd1:12379,http://eraftd2:12379,http://eraftd3:12379 --port 12380
+    ports:
+      - "12379"
+      - "12380"
+      - "9121:9121"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+
+  eraftd2:
+    networks:
+      - eraftd
+    image: eraftd
+    command: --id 2 --cluster http://eraftd1:12379,http://eraftd2:12379,http://eraftd3:12379 --port 12380
+    ports:
+      - "12379"
+      - "12380"
+      - "9121"  
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+  
+  eraftd3:
+    networks:
+      - eraftd
+    image: eraftd
+    command: --id 3 --cluster http://eraftd1:12379,http://eraftd2:12379,http://eraftd3:12379 --port 12380
+    ports:
+      - "12379"
+      - "12380"
+      - "9121"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
+
+  # lookup:
+  #   networks:
+  #     - eraftd
+  #   image: alpine
+  #   command: nslookup eraftd; sleep 5
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  # hosts:
+  #   networks:
+  #     - eraftd
+  #   image: alpine
+  #   command: cat /etc/hosts; sleep 5
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1

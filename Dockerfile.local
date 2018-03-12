@@ -1,0 +1,5 @@
+FROM scratch
+COPY eraftd /
+EXPOSE 12379
+EXPOSE 12380
+ENTRYPOINT [ "/eraftd" ]
